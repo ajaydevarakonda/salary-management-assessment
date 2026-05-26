@@ -1,0 +1,6 @@
+fastapi[standard]
+black
+pylint
+pytest
+pytest-asyncio
+httpx
