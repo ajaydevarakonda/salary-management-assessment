@@ -9,7 +9,7 @@ from src.domain.salary_insights_repository import SalaryInsightsRepository
 from src.use_cases.get_average_salary_by_job_title import GetAverageSalaryByJobTitle
 from src.use_cases.get_salary_stats_by_country import GetSalaryStatsByCountry
 
-router = APIRouter(prefix="/insights", tags=["insights"])
+router = APIRouter(prefix="/api/insights", tags=["insights"])
 
 
 @router.get("/salary-stats", response_model=list[SalaryStatsResponse])

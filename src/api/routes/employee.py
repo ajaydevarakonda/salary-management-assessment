@@ -18,7 +18,7 @@ from src.use_cases.get_employee import GetEmployee
 from src.use_cases.list_employees import ListEmployees
 from src.use_cases.update_employee import UpdateEmployee
 
-router = APIRouter(prefix="/employees", tags=["employees"])
+router = APIRouter(prefix="/api/employees", tags=["employees"])
 
 
 def _to_response(employee: Employee) -> EmployeeResponse:
