@@ -11,7 +11,7 @@ class SalaryInsightsRepository(Protocol):
         ...
 
     def get_average_salary_by_job_title(
-        self, country: str = None
+        self, country: str
     ) -> list[JobTitleSalaryStats]:
         """Return average salary per job title, optionally filtered by country."""
         ...
