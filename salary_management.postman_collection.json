@@ -1,0 +1,93 @@
+{
+  "info": {
+    "name": "Salary Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "Create Employee",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/employees",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"job_title\": \"Engineer\",\n  \"department\": \"Engineering\",\n  \"country\": \"India\",\n  \"email\": \"jane.doe@example.com\",\n  \"salary\": \"50000.00\",\n  \"hire_date\": \"2022-01-15\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Employees",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/employees"
+          }
+        },
+        {
+          "name": "Get Employee",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/employees/1"
+          }
+        },
+        {
+          "name": "Update Employee",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/employees/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"job_title\": \"Senior Engineer\",\n  \"department\": \"Engineering\",\n  \"country\": \"India\",\n  \"email\": \"jane.doe@example.com\",\n  \"salary\": \"65000.00\",\n  \"hire_date\": \"2022-01-15\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Employee",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/api/employees/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Salary Insights",
+      "item": [
+        {
+          "name": "Salary Stats by Country",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/insights/salary-stats?country=India",
+              "host": ["{{base_url}}"],
+              "path": ["api", "insights", "salary-stats"],
+              "query": [{ "key": "country", "value": "India" }]
+            }
+          }
+        },
+        {
+          "name": "Average Salary by Job Title",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/insights/salary-by-job-title?country=India",
+              "host": ["{{base_url}}"],
+              "path": ["api", "insights", "salary-by-job-title"],
+              "query": [{ "key": "country", "value": "India" }]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
