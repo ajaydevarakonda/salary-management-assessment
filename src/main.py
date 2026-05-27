@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+from src.api.routes.employee import router as employee_router
 
+app = FastAPI(title="Salary Management")
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+app.include_router(employee_router)
