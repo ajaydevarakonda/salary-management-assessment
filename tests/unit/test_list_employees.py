@@ -1,0 +1,53 @@
+import pytest
+from decimal import Decimal
+from datetime import date
+
+from src.domain.employee import Employee
+from src.use_cases.add_employee import AddEmployee
+from src.use_cases.list_employees import ListEmployees
+from tests.unit.fake_employee_repository import FakeEmployeeRepository
+
+
+def make_employee(**overrides) -> Employee:
+    """Return a valid Employee with optional field overrides."""
+    defaults = {
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "job_title": "Engineer",
+        "department": "Engineering",
+        "country": "India",
+        "email": "jane.doe@example.com",
+        "salary": Decimal("50000.00"),
+        "hire_date": date(2022, 1, 15),
+    }
+    return Employee(**{**defaults, **overrides})
+
+
+@pytest.fixture
+def repository():
+    return FakeEmployeeRepository()
+
+
+@pytest.fixture
+def list_employees(repository):
+    return ListEmployees(repository)
+
+
+@pytest.fixture
+def add_employee(repository):
+    return AddEmployee(repository)
+
+
+class TestListEmployees:
+    def test_returns_empty_list_when_no_employees_exist(self, list_employees):
+        assert list_employees.execute() == []
+
+    def test_returns_all_added_employees(self, list_employees, add_employee):
+        first = add_employee.execute(make_employee(first_name="Jane"))
+        second = add_employee.execute(make_employee(first_name="John"))
+        assert list_employees.execute() == [first, second]
+
+    def test_returns_correct_employee_count(self, list_employees, add_employee):
+        add_employee.execute(make_employee(first_name="Jane"))
+        add_employee.execute(make_employee(first_name="John"))
+        assert len(list_employees.execute()) == 2
