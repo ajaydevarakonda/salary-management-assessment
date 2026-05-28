@@ -9,6 +9,7 @@ from alembic import context
 
 from src.infrastructure.database import Base
 import src.infrastructure.models.employee_model  # noqa: F401 — registers model with Base
+import src.infrastructure.models.user_model  # noqa: F401 — registers model with Base
 
 load_dotenv()
 

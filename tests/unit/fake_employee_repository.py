@@ -1,5 +1,7 @@
 from typing import Optional
 
+from dataclasses import replace
+
 from src.domain.employee import Employee
 from src.domain.employee_repository import EmployeeRepository
 
@@ -13,8 +15,6 @@ class FakeEmployeeRepository(EmployeeRepository):
 
     def add(self, employee: Employee) -> Employee:
         """Persist employee with an auto-assigned id and return it."""
-        from dataclasses import replace
-
         employee_with_id = replace(employee, id=self._next_id)
         self._store[self._next_id] = employee_with_id
         self._next_id += 1

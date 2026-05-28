@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from src.api.dependencies import get_employee_repository
+from src.api.dependencies import get_current_user, get_employee_repository
 from src.api.schemas.employee import (
     CreateEmployeeRequest,
     EmployeeResponse,
@@ -18,7 +18,11 @@ from src.use_cases.get_employee import GetEmployee
 from src.use_cases.list_employees import ListEmployees
 from src.use_cases.update_employee import UpdateEmployee
 
-router = APIRouter(prefix="/api/employees", tags=["employees"])
+router = APIRouter(
+    prefix="/api/employees",
+    tags=["employees"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 def _to_response(employee: Employee) -> EmployeeResponse:
