@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Date, Integer, Numeric, String
+from sqlalchemy import Column, Date, Integer, Numeric, String, Index
 
 from src.infrastructure.database import Base
 
@@ -17,3 +17,8 @@ class EmployeeModel(Base):
     email = Column(String(255), nullable=False, unique=True)
     salary = Column(Numeric(precision=15, scale=2), nullable=False)
     hire_date = Column(Date, nullable=False)
+
+    __table_args__ = (
+       Index("idx_employees_country", "country"),
+       Index("idx_employees_job_title", "job_title"),
+    )
