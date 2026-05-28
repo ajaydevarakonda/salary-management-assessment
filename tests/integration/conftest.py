@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from src.api.dependencies import get_current_user
 from src.infrastructure.database import Base, get_session
 from src.infrastructure.models.employee_model import EmployeeModel  # noqa: F401
 from src.main import app
@@ -40,5 +41,6 @@ def session(engine):
 def client(session):
     """Provide a TestClient wired to the transactional test session."""
     app.dependency_overrides[get_session] = lambda: session
+    app.dependency_overrides[get_current_user] = lambda: "test_user"
     yield TestClient(app)
     app.dependency_overrides.clear()

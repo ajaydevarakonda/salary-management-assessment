@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from src.api.dependencies import get_salary_insights_repository
+from src.api.dependencies import get_current_user, get_salary_insights_repository
 from src.api.schemas.salary_insights import (
     JobTitleSalaryStatsResponse,
     SalaryStatsResponse,
@@ -9,7 +9,11 @@ from src.domain.salary_insights_repository import SalaryInsightsRepository
 from src.use_cases.get_average_salary_by_job_title import GetAverageSalaryByJobTitle
 from src.use_cases.get_salary_stats_by_country import GetSalaryStatsByCountry
 
-router = APIRouter(prefix="/api/insights", tags=["insights"])
+router = APIRouter(
+    prefix="/api/insights",
+    tags=["insights"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 @router.get("/salary-stats", response_model=list[SalaryStatsResponse])
