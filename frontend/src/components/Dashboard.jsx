@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Header from "./Header";
 import { getSalaryStats, getSalaryByJobTitle } from "../api";
 
 const COUNTRIES = [
@@ -7,19 +8,6 @@ const COUNTRIES = [
 ];
 
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
-
-function Profile({ username, onLogout }) {
-  return (
-    <div className="profile">
-      <span className="profile-name">{username}</span>
-      <div className="profile-menu">
-        <div className="profile-menu-inner">
-          <button onClick={onLogout}>Logout</button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function CountrySelect({ value, onChange }) {
   const [query, setQuery] = useState(value || "");
@@ -66,7 +54,7 @@ function StatCard({ label, value }) {
   );
 }
 
-export default function Dashboard({ token, username, onLogout }) {
+export default function Dashboard({ token, username, view, onViewChange, onLogout }) {
   const [country, setCountry] = useState("");
   const [stats, setStats] = useState(null);
   const [jobStats, setJobStats] = useState([]);
@@ -88,10 +76,7 @@ export default function Dashboard({ token, username, onLogout }) {
 
   return (
     <div className="page">
-      <header className="header">
-        <span className="header-title">Salary Management</span>
-        <Profile username={username} onLogout={onLogout} />
-      </header>
+      <Header username={username} view={view} onViewChange={onViewChange} onLogout={onLogout} />
 
       <main className="main">
         <div className="toolbar">
@@ -100,7 +85,6 @@ export default function Dashboard({ token, username, onLogout }) {
         </div>
 
         {error && <p className="error">{error}</p>}
-
         {loading && <p className="muted">Loading…</p>}
 
         {!loading && stats && (

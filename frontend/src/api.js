@@ -8,6 +8,42 @@ export async function login(username, password) {
   return res.json();
 }
 
+export async function listEmployees(token) {
+  const res = await fetch("/api/employees", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch employees");
+  return res.json();
+}
+
+export async function createEmployee(body, token) {
+  const res = await fetch("/api/employees", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error("Failed to create employee");
+  return res.json();
+}
+
+export async function updateEmployee(id, body, token) {
+  const res = await fetch(`/api/employees/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error("Failed to update employee");
+  return res.json();
+}
+
+export async function deleteEmployee(id, token) {
+  const res = await fetch(`/api/employees/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to delete employee");
+}
+
 export async function getSalaryStats(country, token) {
   const res = await fetch(`/api/insights/salary-stats?country=${encodeURIComponent(country)}`, {
     headers: { Authorization: `Bearer ${token}` },
