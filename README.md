@@ -42,7 +42,6 @@ The result is a codebase where a change to the salary calculation touches one us
 Simplicity is a feature. The following were omitted to keep the application focused:
 
 - **No user management endpoints.** There is no API to create, update, or delete users. Users are seeded directly via the `create_sample_user` script. Adding a full user admin surface would require role-based access control, self-service password resets, and email verification — complexity that is out of scope.
-- **No pagination.** The employee list endpoint returns all records. Pagination adds query parameter contracts, total-count headers, and frontend state that would dwarf the value it adds at this scale.
 - **No refresh tokens.** JWT tokens expire after 60 minutes. A refresh token flow requires a token store, rotation logic, and revocation — a meaningful security surface for a feature that is not needed here.
 - **No soft deletes.** Deleted employees are removed from the database. Soft deletes add a `deleted_at` column, require every query to filter it, and introduce the concept of "restoring" records — all avoidable here.
 - **No audit logging.** Who changed what and when is important in production payroll systems. It was left out to avoid coupling every write operation to a logging side-effect.
