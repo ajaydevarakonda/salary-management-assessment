@@ -47,6 +47,21 @@ class MysqlEmployeeRepository(EmployeeRepository):
         self._session.refresh(model)
         return _to_domain(model)
 
+    def count(self) -> int:
+        """Return the total number of employees."""
+        return self._session.query(EmployeeModel).count()
+
+    def find_page(self, page: int, page_size: int) -> list[Employee]:
+        """Return one page of employees ordered by id."""
+        models = (
+            self._session.query(EmployeeModel)
+            .order_by(EmployeeModel.id)
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+            .all()
+        )
+        return [_to_domain(model) for model in models]
+
     def delete(self, employee_id: int) -> None:
         """Remove the employee with the given id."""
         model = self._session.get(EmployeeModel, employee_id)

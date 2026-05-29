@@ -18,6 +18,14 @@ class EmployeeRepository(Protocol):
         """Return all employees."""
         ...
 
+    def count(self) -> int:
+        """Return the total number of employees."""
+        ...
+
+    def find_page(self, page: int, page_size: int) -> list[Employee]:
+        """Return one page of employees ordered by id."""
+        ...
+
     def update(self, employee: Employee) -> Employee:
         """Persist changes to an existing employee and return it."""
         ...
