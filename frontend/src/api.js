@@ -8,8 +8,9 @@ export async function login(username, password) {
   return res.json();
 }
 
-export async function listEmployees(token) {
-  const res = await fetch("/api/employees", {
+export async function listEmployees(token, { page = 1, pageSize = 20, search = "" } = {}) {
+  const params = new URLSearchParams({ page, page_size: pageSize, search });
+  const res = await fetch(`/api/employees?${params}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error("Failed to fetch employees");

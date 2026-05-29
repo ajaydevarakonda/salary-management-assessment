@@ -79,3 +79,71 @@ class TestListEmployeesPaginated:
         employees, total = list_employees.execute_page(page=1, page_size=10)
         assert employees == []
         assert total == 0
+
+
+class TestListEmployeesSearch:
+    def test_search_by_first_name_returns_matching_employees(
+        self, list_employees, add_employee
+    ):
+        alice = add_employee.execute(make_employee(first_name="Alice", email="alice@example.com"))
+        add_employee.execute(make_employee(first_name="Bob", email="bob@example.com"))
+        employees, total = list_employees.execute_page(page=1, page_size=10, search="alice")
+        assert employees == [alice]
+        assert total == 1
+
+    def test_search_by_last_name_returns_matching_employees(
+        self, list_employees, add_employee
+    ):
+        smith = add_employee.execute(make_employee(last_name="Smith", email="smith@example.com"))
+        add_employee.execute(make_employee(last_name="Jones", email="jones@example.com"))
+        employees, total = list_employees.execute_page(page=1, page_size=10, search="smith")
+        assert employees == [smith]
+        assert total == 1
+
+    def test_search_by_email_returns_matching_employees(
+        self, list_employees, add_employee
+    ):
+        target = add_employee.execute(make_employee(email="target@corp.com"))
+        add_employee.execute(make_employee(email="other@corp.com"))
+        employees, total = list_employees.execute_page(page=1, page_size=10, search="target")
+        assert employees == [target]
+        assert total == 1
+
+    def test_search_by_country_returns_matching_employees(
+        self, list_employees, add_employee
+    ):
+        add_employee.execute(make_employee(email="a@example.com", country="Brazil"))
+        add_employee.execute(make_employee(email="b@example.com", country="India"))
+        employees, total = list_employees.execute_page(page=1, page_size=10, search="brazil")
+        assert len(employees) == 1
+        assert total == 1
+
+    def test_search_is_case_insensitive(self, list_employees, add_employee):
+        alice = add_employee.execute(make_employee(first_name="Alice", email="alice@example.com"))
+        employees, total = list_employees.execute_page(page=1, page_size=10, search="ALICE")
+        assert employees == [alice]
+        assert total == 1
+
+    def test_search_total_reflects_filtered_count(self, list_employees, add_employee):
+        for i in range(4):
+            add_employee.execute(make_employee(first_name="Alice", email=f"alice{i}@example.com"))
+        for i in range(3):
+            add_employee.execute(make_employee(first_name="Bob", email=f"bob{i}@example.com"))
+        employees, total = list_employees.execute_page(page=1, page_size=10, search="alice")
+        assert len(employees) == 4
+        assert total == 4
+
+    def test_empty_search_returns_all_employees(self, list_employees, add_employee):
+        add_employee.execute(make_employee(first_name="Alice", email="alice@example.com"))
+        add_employee.execute(make_employee(first_name="Bob", email="bob@example.com"))
+        employees, total = list_employees.execute_page(page=1, page_size=10, search="")
+        assert len(employees) == 2
+        assert total == 2
+
+    def test_search_no_match_returns_empty_list_with_zero_total(
+        self, list_employees, add_employee
+    ):
+        add_employee.execute(make_employee(first_name="Alice", email="alice@example.com"))
+        employees, total = list_employees.execute_page(page=1, page_size=10, search="zzz")
+        assert employees == []
+        assert total == 0
