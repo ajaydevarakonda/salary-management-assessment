@@ -43,3 +43,12 @@ class EmployeeResponse(BaseModel):
     email: str
     salary: Decimal
     hire_date: date
+
+
+class EmployeePageResponse(BaseModel):
+    """Response shape for a paginated list of employees."""
+
+    employees: list[EmployeeResponse]
+    total: int
+    page: int
+    page_size: int

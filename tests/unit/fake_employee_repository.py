@@ -33,6 +33,16 @@ class FakeEmployeeRepository(EmployeeRepository):
         self._store[employee.id] = employee
         return employee
 
+    def count(self) -> int:
+        """Return the total number of stored employees."""
+        return len(self._store)
+
+    def find_page(self, page: int, page_size: int) -> list[Employee]:
+        """Return one page of employees ordered by id."""
+        all_employees = sorted(self._store.values(), key=lambda e: e.id)
+        start = (page - 1) * page_size
+        return all_employees[start : start + page_size]
+
     def delete(self, employee_id: int) -> None:
         """Remove the employee with the given id."""
         self._store.pop(employee_id, None)

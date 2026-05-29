@@ -2,11 +2,12 @@ from dataclasses import replace
 from datetime import date
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from src.api.dependencies import get_current_user, get_employee_repository
 from src.api.schemas.employee import (
     CreateEmployeeRequest,
+    EmployeePageResponse,
     EmployeeResponse,
     UpdateEmployeeRequest,
 )
@@ -64,12 +65,20 @@ def create_employee(
     return _to_response(employee)
 
 
-@router.get("", response_model=list[EmployeeResponse])
+@router.get("", response_model=EmployeePageResponse)
 def list_employees(
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=20, ge=1, le=100),
     repository: EmployeeRepository = Depends(get_employee_repository),
 ):
-    """Return all employees."""
-    return [_to_response(e) for e in ListEmployees(repository).execute()]
+    """Return a paginated list of employees."""
+    employees, total = ListEmployees(repository).execute_page(page, page_size)
+    return EmployeePageResponse(
+        employees=[_to_response(e) for e in employees],
+        total=total,
+        page=page,
+        page_size=page_size,
+    )
 
 
 @router.get("/{employee_id}", response_model=EmployeeResponse)

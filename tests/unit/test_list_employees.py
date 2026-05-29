@@ -51,3 +51,31 @@ class TestListEmployees:
         add_employee.execute(make_employee(first_name="Jane"))
         add_employee.execute(make_employee(first_name="John"))
         assert len(list_employees.execute()) == 2
+
+
+class TestListEmployeesPaginated:
+    def test_returns_items_and_total(self, list_employees, add_employee):
+        add_employee.execute(make_employee(first_name="Jane"))
+        add_employee.execute(make_employee(first_name="John"))
+        employees, total = list_employees.execute_page(page=1, page_size=10)
+        assert len(employees) == 2
+        assert total == 2
+
+    def test_returns_correct_page(self, list_employees, add_employee):
+        for i in range(5):
+            add_employee.execute(make_employee(first_name=f"User{i}", email=f"user{i}@example.com"))
+        employees, total = list_employees.execute_page(page=1, page_size=3)
+        assert len(employees) == 3
+        assert total == 5
+
+    def test_second_page_returns_remaining_items(self, list_employees, add_employee):
+        for i in range(5):
+            add_employee.execute(make_employee(first_name=f"User{i}", email=f"user{i}@example.com"))
+        employees, total = list_employees.execute_page(page=2, page_size=3)
+        assert len(employees) == 2
+        assert total == 5
+
+    def test_empty_page_returns_empty_list_with_zero_total(self, list_employees):
+        employees, total = list_employees.execute_page(page=1, page_size=10)
+        assert employees == []
+        assert total == 0
