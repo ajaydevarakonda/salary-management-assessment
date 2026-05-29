@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "./Header";
 import { listEmployees, createEmployee, updateEmployee, deleteEmployee } from "../api";
 
@@ -8,6 +8,9 @@ const EMPTY = {
   first_name: "", last_name: "", job_title: "", department: "",
   country: "", email: "", salary: "", hire_date: "",
 };
+
+const PAGE_SIZE = 20;
+const DEBOUNCE_MS = 300;
 
 function EmployeeModal({ employee, onSave, onClose }) {
   const [form, setForm] = useState(employee || EMPTY);
@@ -82,30 +85,32 @@ function EmployeeModal({ employee, onSave, onClose }) {
 
 export default function Employees({ token, username, view, onViewChange, onLogout }) {
   const [employees, setEmployees] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [editing, setEditing] = useState(null);
+  const debounceTimer = useRef(null);
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    setPage(1);
+    clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => setDebouncedSearch(value), DEBOUNCE_MS);
+  };
 
   const load = () => {
     setLoading(true);
-    listEmployees(token)
-      .then(setEmployees)
+    listEmployees(token, { page, pageSize: PAGE_SIZE, search: debouncedSearch })
+      .then((data) => { setEmployees(data.employees); setTotal(data.total); })
       .catch(() => setError("Failed to load employees."))
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, [token]);
-
-  const filtered = employees.filter((e) => {
-    const q = search.toLowerCase();
-    return (
-      e.first_name.toLowerCase().includes(q) ||
-      e.last_name.toLowerCase().includes(q) ||
-      e.email.toLowerCase().includes(q) ||
-      e.country.toLowerCase().includes(q)
-    );
-  });
+  useEffect(() => { load(); }, [token, page, debouncedSearch]);
 
   const handleSave = async (form) => {
     if (editing.id) {
@@ -133,7 +138,7 @@ export default function Employees({ token, username, view, onViewChange, onLogou
             className="search-input"
             placeholder="Search by name, email or country…"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
           />
           <button className="btn-primary" onClick={() => setEditing({})}>
             + Add Employee
@@ -159,7 +164,7 @@ export default function Employees({ token, username, view, onViewChange, onLogou
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((emp) => (
+                {employees.map((emp) => (
                   <tr key={emp.id}>
                     <td>{emp.first_name} {emp.last_name}</td>
                     <td>{emp.job_title}</td>
@@ -174,7 +179,7 @@ export default function Employees({ token, username, view, onViewChange, onLogou
                     </td>
                   </tr>
                 ))}
-                {filtered.length === 0 && (
+                {employees.length === 0 && (
                   <tr>
                     <td colSpan="8" className="muted" style={{ textAlign: "center", padding: "24px" }}>
                       No employees found.
@@ -183,6 +188,27 @@ export default function Employees({ token, username, view, onViewChange, onLogou
                 )}
               </tbody>
             </table>
+            {total > PAGE_SIZE && (
+              <div className="pagination">
+                <button
+                  className="btn-secondary"
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  Previous
+                </button>
+                <span className="muted">
+                  Page {page} of {Math.ceil(total / PAGE_SIZE)} ({total} total)
+                </span>
+                <button
+                  className="btn-secondary"
+                  disabled={page >= Math.ceil(total / PAGE_SIZE)}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         )}
       </main>

@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Optional
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Query, Session
 
 from src.domain.employee import Employee
 from src.domain.employee_repository import EmployeeRepository
@@ -47,14 +47,16 @@ class MysqlEmployeeRepository(EmployeeRepository):
         self._session.refresh(model)
         return _to_domain(model)
 
-    def count(self) -> int:
-        """Return the total number of employees."""
-        return self._session.query(EmployeeModel).count()
+    def count(self, search: str = "") -> int:
+        """Return the total number of employees, optionally filtered by search."""
+        return _base_query(self._session, search).count()
 
-    def find_page(self, page: int, page_size: int) -> list[Employee]:
-        """Return one page of employees ordered by id."""
+    def find_page(
+        self, page: int, page_size: int, search: str = ""
+    ) -> list[Employee]:
+        """Return one page of employees ordered by id, optionally filtered."""
         models = (
-            self._session.query(EmployeeModel)
+            _base_query(self._session, search)
             .order_by(EmployeeModel.id)
             .offset((page - 1) * page_size)
             .limit(page_size)
@@ -68,6 +70,20 @@ class MysqlEmployeeRepository(EmployeeRepository):
         if model:
             self._session.delete(model)
             self._session.commit()
+
+
+def _base_query(session: Session, search: str) -> Query:
+    """Return a query filtered by search term across name, email, and country."""
+    query = session.query(EmployeeModel)
+    if search:
+        pattern = f"%{search}%"
+        query = query.filter(
+            EmployeeModel.first_name.ilike(pattern)
+            | EmployeeModel.last_name.ilike(pattern)
+            | EmployeeModel.email.ilike(pattern)
+            | EmployeeModel.country.ilike(pattern)
+        )
+    return query
 
 
 def _to_model(employee: Employee) -> EmployeeModel:

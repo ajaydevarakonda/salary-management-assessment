@@ -69,10 +69,11 @@ def create_employee(
 def list_employees(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
+    search: str = Query(default=""),
     repository: EmployeeRepository = Depends(get_employee_repository),
 ):
-    """Return a paginated list of employees."""
-    employees, total = ListEmployees(repository).execute_page(page, page_size)
+    """Return a paginated, optionally filtered list of employees."""
+    employees, total = ListEmployees(repository).execute_page(page, page_size, search)
     return EmployeePageResponse(
         employees=[_to_response(e) for e in employees],
         total=total,

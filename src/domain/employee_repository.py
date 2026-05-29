@@ -18,12 +18,14 @@ class EmployeeRepository(Protocol):
         """Return all employees."""
         ...
 
-    def count(self) -> int:
-        """Return the total number of employees."""
+    def count(self, search: str = "") -> int:
+        """Return the total number of employees, optionally filtered by search."""
         ...
 
-    def find_page(self, page: int, page_size: int) -> list[Employee]:
-        """Return one page of employees ordered by id."""
+    def find_page(
+        self, page: int, page_size: int, search: str = ""
+    ) -> list[Employee]:
+        """Return one page of employees ordered by id, optionally filtered by search."""
         ...
 
     def update(self, employee: Employee) -> Employee:

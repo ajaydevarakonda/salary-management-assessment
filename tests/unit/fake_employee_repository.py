@@ -33,15 +33,31 @@ class FakeEmployeeRepository(EmployeeRepository):
         self._store[employee.id] = employee
         return employee
 
-    def count(self) -> int:
-        """Return the total number of stored employees."""
-        return len(self._store)
+    def count(self, search: str = "") -> int:
+        """Return the total number of stored employees, optionally filtered."""
+        return len(self._match(search))
 
-    def find_page(self, page: int, page_size: int) -> list[Employee]:
-        """Return one page of employees ordered by id."""
-        all_employees = sorted(self._store.values(), key=lambda e: e.id)
+    def find_page(
+        self, page: int, page_size: int, search: str = ""
+    ) -> list[Employee]:
+        """Return one page of employees ordered by id, optionally filtered."""
+        matched = self._match(search)
         start = (page - 1) * page_size
-        return all_employees[start : start + page_size]
+        return matched[start : start + page_size]
+
+    def _match(self, search: str) -> list[Employee]:
+        """Return employees matching search term, sorted by id."""
+        ordered = sorted(self._store.values(), key=lambda e: e.id)
+        if not search:
+            return ordered
+        query = search.lower()
+        return [
+            e for e in ordered
+            if query in e.first_name.lower()
+            or query in e.last_name.lower()
+            or query in e.email.lower()
+            or query in e.country.lower()
+        ]
 
     def delete(self, employee_id: int) -> None:
         """Remove the employee with the given id."""
