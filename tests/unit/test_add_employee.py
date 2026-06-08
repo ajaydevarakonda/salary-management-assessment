@@ -18,6 +18,7 @@ def make_employee(**overrides) -> Employee:
         "email": "jane.doe@example.com",
         "salary": Decimal("50000.00"),
         "hire_date": date(2022, 1, 15),
+        "currency": "USD",
     }
     return Employee(**{**defaults, **overrides})
 

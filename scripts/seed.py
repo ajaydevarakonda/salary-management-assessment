@@ -54,18 +54,20 @@ JOB_TITLES = [
     "Legal Counsel",
 ]
 
-COUNTRIES = [
-    "India",
-    "United States",
-    "United Kingdom",
-    "Germany",
-    "Canada",
-    "Australia",
-    "Singapore",
-    "Netherlands",
-    "France",
-    "Brazil",
-]
+COUNTRY_CURRENCY = {
+    "India": "INR",
+    "United States": "USD",
+    "United Kingdom": "GBP",
+    "Germany": "EUR",
+    "Canada": "CAD",
+    "Australia": "AUD",
+    "Singapore": "SGD",
+    "Netherlands": "EUR",
+    "France": "EUR",
+    "Brazil": "BRL",
+}
+
+COUNTRIES = list(COUNTRY_CURRENCY.keys())
 
 
 def build_records(count: int) -> list[dict]:
@@ -76,18 +78,20 @@ def build_records(count: int) -> list[dict]:
     for index in range(count):
         first_name = random.choice(first_names)
         last_name = random.choice(last_names)
+        country = random.choice(COUNTRIES)
         records.append(
             {
                 "first_name": first_name,
                 "last_name": last_name,
                 "job_title": random.choice(JOB_TITLES),
                 "department": random.choice(DEPARTMENTS),
-                "country": random.choice(COUNTRIES),
+                "country": country,
                 "email": f"{first_name.lower()}.{last_name.lower()}.{index}@example.com",
                 "salary": round(random.uniform(30_000, 200_000), 2),
                 "hire_date": fake.date_between(
                     start_date=date(2010, 1, 1), end_date=date(2024, 12, 31)
                 ),
+                "currency": COUNTRY_CURRENCY[country],
             }
         )
     return records

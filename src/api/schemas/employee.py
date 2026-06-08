@@ -16,6 +16,7 @@ class CreateEmployeeRequest(BaseModel):
     email: str
     salary: Decimal
     hire_date: date
+    currency: str
 
 
 class UpdateEmployeeRequest(BaseModel):
@@ -29,6 +30,7 @@ class UpdateEmployeeRequest(BaseModel):
     email: str
     salary: Decimal
     hire_date: date
+    currency: str
 
 
 class EmployeeResponse(BaseModel):
@@ -43,6 +45,7 @@ class EmployeeResponse(BaseModel):
     email: str
     salary: Decimal
     hire_date: date
+    currency: str
 
 
 class EmployeePageResponse(BaseModel):

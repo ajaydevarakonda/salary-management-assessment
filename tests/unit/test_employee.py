@@ -16,6 +16,7 @@ def make_valid_employee(**overrides) -> Employee:
         "email": "jane.doe@example.com",
         "salary": Decimal("50000.00"),
         "hire_date": date(2022, 1, 15),
+        "currency": "USD",
     }
     return Employee(**{**defaults, **overrides})
 
@@ -44,3 +45,21 @@ class TestNameValidation:
     def test_raises_when_last_name_is_empty(self):
         with pytest.raises(ValueError, match="Last name cannot be empty"):
             make_valid_employee(last_name="")
+
+
+class TestCurrencyValidation:
+    def test_raises_when_currency_is_empty(self):
+        with pytest.raises(ValueError, match="Currency cannot be empty"):
+            make_valid_employee(currency="")
+
+    def test_raises_when_currency_is_not_three_letters(self):
+        with pytest.raises(ValueError, match="Currency must be a 3-letter ISO code"):
+            make_valid_employee(currency="US")
+
+    def test_raises_when_currency_is_too_long(self):
+        with pytest.raises(ValueError, match="Currency must be a 3-letter ISO code"):
+            make_valid_employee(currency="USDD")
+
+    def test_accepts_valid_three_letter_currency(self):
+        employee = make_valid_employee(currency="EUR")
+        assert employee.currency == "EUR"

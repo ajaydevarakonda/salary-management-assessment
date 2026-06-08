@@ -38,6 +38,7 @@ def _to_response(employee: Employee) -> EmployeeResponse:
         email=employee.email,
         salary=employee.salary,
         hire_date=employee.hire_date,
+        currency=employee.currency,
     )
 
 
@@ -52,6 +53,7 @@ def _to_domain(body: CreateEmployeeRequest | UpdateEmployeeRequest) -> Employee:
         email=body.email,
         salary=body.salary,
         hire_date=body.hire_date,
+        currency=body.currency,
     )
 
 

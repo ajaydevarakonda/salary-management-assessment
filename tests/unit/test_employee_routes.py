@@ -15,6 +15,7 @@ VALID_EMPLOYEE_PAYLOAD = {
     "email": "jane.doe@example.com",
     "salary": "50000.00",
     "hire_date": "2022-01-15",
+    "currency": "USD",
 }
 
 
@@ -38,6 +39,10 @@ class TestCreateEmployee:
         assert response.json()["first_name"] == "Jane"
         assert response.json()["last_name"] == "Doe"
 
+    def test_returns_currency_in_response(self, client):
+        response = client.post("/api/employees", json=VALID_EMPLOYEE_PAYLOAD)
+        assert response.json()["currency"] == "USD"
+
 
 class TestGetEmployee:
     def test_returns_200_with_employee(self, client):
@@ -55,13 +60,16 @@ class TestListEmployees:
     def test_returns_200_with_empty_list(self, client):
         response = client.get("/api/employees")
         assert response.status_code == 200
-        assert response.json() == []
+        assert response.json()["employees"] == []
 
     def test_returns_all_employees(self, client):
         client.post("/api/employees", json=VALID_EMPLOYEE_PAYLOAD)
-        client.post("/api/employees", json={**VALID_EMPLOYEE_PAYLOAD, "first_name": "John"})
+        client.post(
+            "/api/employees",
+            json={**VALID_EMPLOYEE_PAYLOAD, "first_name": "John", "email": "john.doe@example.com"},
+        )
         response = client.get("/api/employees")
-        assert len(response.json()) == 2
+        assert len(response.json()["employees"]) == 2
 
 
 class TestUpdateEmployee:
@@ -75,6 +83,13 @@ class TestUpdateEmployee:
     def test_returns_404_when_employee_not_found(self, client):
         response = client.put("/api/employees/999", json=VALID_EMPLOYEE_PAYLOAD)
         assert response.status_code == 404
+
+    def test_updates_currency(self, client):
+        created = client.post("/api/employees", json=VALID_EMPLOYEE_PAYLOAD).json()
+        updated_payload = {**VALID_EMPLOYEE_PAYLOAD, "currency": "GBP"}
+        response = client.put(f"/api/employees/{created['id']}", json=updated_payload)
+        assert response.status_code == 200
+        assert response.json()["currency"] == "GBP"
 
 
 class TestDeleteEmployee:

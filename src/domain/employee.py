@@ -16,6 +16,7 @@ class Employee:
     email: str
     salary: Decimal
     hire_date: date
+    currency: str
     id: Optional[int] = None
 
     def __post_init__(self):
@@ -25,6 +26,10 @@ class Employee:
             raise ValueError("Last name cannot be empty")
         if self.salary <= 0:
             raise ValueError("Salary must be positive")
+        if not self.currency:
+            raise ValueError("Currency cannot be empty")
+        if len(self.currency) != 3:
+            raise ValueError("Currency must be a 3-letter ISO code")
 
     def full_name(self) -> str:
         """Return the employee's full name."""

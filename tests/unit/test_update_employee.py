@@ -20,6 +20,7 @@ def make_employee(**overrides) -> Employee:
         "email": "jane.doe@example.com",
         "salary": Decimal("50000.00"),
         "hire_date": date(2022, 1, 15),
+        "currency": "USD",
     }
     return Employee(**{**defaults, **overrides})
 
@@ -49,3 +50,8 @@ class TestUpdateEmployee:
         updated = replace(saved_employee, salary=Decimal("75000.00"))
         update_employee.execute(updated)
         assert repository.find_by_id(saved_employee.id).salary == Decimal("75000.00")
+
+    def test_persists_updated_currency(self, update_employee, saved_employee, repository):
+        updated = replace(saved_employee, currency="GBP")
+        update_employee.execute(updated)
+        assert repository.find_by_id(saved_employee.id).currency == "GBP"

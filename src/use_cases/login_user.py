@@ -1,9 +1,7 @@
-from passlib.context import CryptContext
+import bcrypt
 
 from src.domain.user_repository import UserRepository
 from src.infrastructure.jwt_service import create_access_token
-
-_bcrypt_context = CryptContext(schemes=["bcrypt"])
 
 
 class LoginUser:
@@ -16,6 +14,10 @@ class LoginUser:
         """Return a JWT token if credentials are valid, otherwise raise."""
         user = self._repository.find_by_username(username)
 
-        if not user or not _bcrypt_context.verify(password, user.hashed_password):
+        password_matches = user and bcrypt.checkpw(
+            password.encode("utf-8"),
+            user.hashed_password.encode("utf-8"),
+        )
+        if not password_matches:
             raise ValueError("Invalid credentials")
         return create_access_token(username)

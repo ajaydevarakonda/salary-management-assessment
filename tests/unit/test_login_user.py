@@ -1,18 +1,18 @@
+import bcrypt
 import pytest
-from passlib.context import CryptContext
 
 from src.domain.user import User
 from src.use_cases.login_user import LoginUser
 from tests.unit.fake_user_repository import FakeUserRepository
-
-bcrypt_context = CryptContext(schemes=["bcrypt"])
 
 
 def make_user(username: str = "admin", password: str = "secret") -> User:
     """Return a User with a bcrypt-hashed password."""
     return User(
         username=username,
-        hashed_password=bcrypt_context.hash(password),
+        hashed_password=bcrypt.hashpw(
+            password.encode("utf-8"), bcrypt.gensalt()
+        ).decode("utf-8"),
     )
 
 

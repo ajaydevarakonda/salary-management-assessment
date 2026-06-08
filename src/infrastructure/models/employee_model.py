@@ -17,6 +17,7 @@ class EmployeeModel(Base):
     email = Column(String(255), nullable=False, unique=True)
     salary = Column(Numeric(precision=15, scale=2), nullable=False)
     hire_date = Column(Date, nullable=False)
+    currency = Column(String(3), nullable=False)
 
     __table_args__ = (
        Index("idx_employees_country", "country"),

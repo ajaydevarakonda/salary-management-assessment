@@ -43,6 +43,7 @@ class MysqlEmployeeRepository(EmployeeRepository):
         model.email = employee.email
         model.salary = employee.salary
         model.hire_date = employee.hire_date
+        model.currency = employee.currency
         self._session.commit()
         self._session.refresh(model)
         return _to_domain(model)
@@ -97,6 +98,7 @@ def _to_model(employee: Employee) -> EmployeeModel:
         email=employee.email,
         salary=employee.salary,
         hire_date=employee.hire_date,
+        currency=employee.currency,
     )
 
 
@@ -112,4 +114,5 @@ def _to_domain(model: EmployeeModel) -> Employee:
         email=model.email,
         salary=Decimal(str(model.salary)),
         hire_date=model.hire_date,
+        currency=model.currency,
     )
