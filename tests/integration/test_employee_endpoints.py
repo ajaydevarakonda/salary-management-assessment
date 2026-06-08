@@ -48,18 +48,18 @@ class TestGetEmployee:
 
 class TestListEmployees:
     def test_returns_empty_list_initially(self, client):
-        response = client.get("/api/api/employees")
+        response = client.get("/api/employees")
         assert response.status_code == 200
         assert response.json()["employees"] == []
 
     def test_returns_all_created_employees(self, client):
-        client.post("/api/api/employees", json=VALID_EMPLOYEE_PAYLOAD)
-        client.post("/api/api/employees", json={
+        client.post("/api/employees", json=VALID_EMPLOYEE_PAYLOAD)
+        client.post("/api/employees", json={
             **VALID_EMPLOYEE_PAYLOAD,
             "first_name": "John",
             "email": "john.doe@example.com",
         })
-        response = client.get("/api/api/employees")
+        response = client.get("/api/employees")
         assert len(response.json()["employees"]) == 2
 
 
