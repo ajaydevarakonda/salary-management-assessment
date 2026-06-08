@@ -13,11 +13,11 @@ class FakeSalaryInsightsRepository(SalaryInsightsRepository):
 
     def get_salary_stats_by_country(self, country: str) -> list[SalaryStats]:
         """Compute salary stats for the given country."""
-        salaries = [
-            e.salary for e in self._employees if e.country == country
-        ]
-        if not salaries:
+        matching = [e for e in self._employees if e.country == country]
+        if not matching:
             return []
+        salaries = [e.salary for e in matching]
+        currency = matching[0].currency
         return [
             SalaryStats(
                 country=country,
@@ -25,6 +25,7 @@ class FakeSalaryInsightsRepository(SalaryInsightsRepository):
                 maximum=max(salaries),
                 average=sum(salaries) / len(salaries),
                 employee_count=len(salaries),
+                currency=currency,
             )
         ]
 
@@ -32,18 +33,19 @@ class FakeSalaryInsightsRepository(SalaryInsightsRepository):
         self, country: str
     ) -> list[JobTitleSalaryStats]:
         """Compute average salary per job title for the given country."""
-        job_titles: dict[str, list[Decimal]] = {}
+        job_groups: dict[str, list[Decimal]] = {}
+        currency = "USD"
         for employee in self._employees:
             if employee.country == country:
-                job_titles.setdefault(employee.job_title, []).append(
-                    employee.salary
-                )
+                currency = employee.currency
+                job_groups.setdefault(employee.job_title, []).append(employee.salary)
 
         return [
             JobTitleSalaryStats(
                 job_title=job_title,
                 average=sum(salaries) / len(salaries),
                 employee_count=len(salaries),
+                currency=currency,
             )
-            for job_title, salaries in job_titles.items()
+            for job_title, salaries in job_groups.items()
         ]

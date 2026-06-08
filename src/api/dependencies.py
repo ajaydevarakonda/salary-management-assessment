@@ -2,11 +2,13 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
+from src.domain.currency_converter import CurrencyConverter
 from src.domain.employee_repository import EmployeeRepository
 from src.domain.salary_insights_repository import SalaryInsightsRepository
-from src.infrastructure.database import get_session
-from src.infrastructure.jwt_service import decode_access_token
 from src.domain.user_repository import UserRepository
+from src.infrastructure.database import get_session
+from src.infrastructure.fixed_rate_currency_converter import FixedRateCurrencyConverter
+from src.infrastructure.jwt_service import decode_access_token
 from src.infrastructure.mysql_employee_repository import MysqlEmployeeRepository
 from src.infrastructure.mysql_salary_insights_repository import MysqlSalaryInsightsRepository
 from src.infrastructure.mysql_user_repository import MysqlUserRepository
@@ -46,3 +48,8 @@ def get_user_repository(
 ) -> UserRepository:
     """Provide a MySQL-backed user repository."""
     return MysqlUserRepository(session)
+
+
+def get_currency_converter() -> CurrencyConverter:
+    """Provide the fixed-rate currency converter."""
+    return FixedRateCurrencyConverter()

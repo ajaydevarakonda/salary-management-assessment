@@ -11,6 +11,7 @@ class SalaryStatsResponse(BaseModel):
     maximum: Decimal
     average: Decimal
     employee_count: int
+    currency: str
 
 
 class JobTitleSalaryStatsResponse(BaseModel):
@@ -19,3 +20,4 @@ class JobTitleSalaryStatsResponse(BaseModel):
     job_title: str
     average: Decimal
     employee_count: int
+    currency: str

@@ -22,12 +22,13 @@ class MysqlSalaryInsightsRepository(SalaryInsightsRepository):
                 func.max(EmployeeModel.salary),
                 func.avg(EmployeeModel.salary),
                 func.count(EmployeeModel.id),
+                func.min(EmployeeModel.currency),
             )
             .filter(EmployeeModel.country == country)
             .one()
         )
 
-        minimum, maximum, average, count = result
+        minimum, maximum, average, count, currency = result
         if count == 0:
             return []
 
@@ -38,6 +39,7 @@ class MysqlSalaryInsightsRepository(SalaryInsightsRepository):
                 maximum=Decimal(str(maximum)),
                 average=Decimal(str(average)),
                 employee_count=count,
+                currency=currency,
             )
         ]
 
@@ -50,6 +52,7 @@ class MysqlSalaryInsightsRepository(SalaryInsightsRepository):
                 EmployeeModel.job_title,
                 func.avg(EmployeeModel.salary),
                 func.count(EmployeeModel.id),
+                func.min(EmployeeModel.currency),
             )
             .filter(EmployeeModel.country == country)
             .group_by(EmployeeModel.job_title)
@@ -62,6 +65,7 @@ class MysqlSalaryInsightsRepository(SalaryInsightsRepository):
                 job_title=job_title,
                 average=Decimal(str(average)),
                 employee_count=count,
+                currency=currency,
             )
-            for job_title, average, count in rows
+            for job_title, average, count, currency in rows
         ]

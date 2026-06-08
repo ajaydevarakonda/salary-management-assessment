@@ -11,6 +11,7 @@ class SalaryStats:
     maximum: Decimal
     average: Decimal
     employee_count: int
+    currency: str
 
 
 @dataclass(frozen=True)
@@ -20,3 +21,4 @@ class JobTitleSalaryStats:
     job_title: str
     average: Decimal
     employee_count: int
+    currency: str
