@@ -2,11 +2,11 @@
 
 import os
 
+import bcrypt
 from dotenv import load_dotenv
 
 from src.infrastructure.database import SessionLocal
 from src.infrastructure.models.user_model import UserModel
-from src.use_cases.login_user import _bcrypt_context
 
 load_dotenv()
 
@@ -22,7 +22,8 @@ def create_sample_user() -> None:
         if exists:
             print(f"User '{USERNAME}' already exists.")
             return
-        session.add(UserModel(username=USERNAME, hashed_password=_bcrypt_context.hash(PASSWORD)))
+        hashed = bcrypt.hashpw(PASSWORD.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        session.add(UserModel(username=USERNAME, hashed_password=hashed))
         session.commit()
         print(f"User '{USERNAME}' created.")
     except Exception:
